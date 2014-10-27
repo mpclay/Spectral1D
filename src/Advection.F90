@@ -148,7 +148,11 @@ PROGRAM Advection_p
       nadv = nadv + 1_IWP
       t = t + dt
    END DO tloop
-
+   WRITE(*,200) 'Simulation step number: ', nadv, &
+                '; Simulation time: ', t, &
+                '; Max: ', MAXVAL(u0), &
+                '; Min: ', MINVAL(u0)
+   
    ! Calculate the errors.
    IF (reportErrors) THEN
       l2 = 0.0_RWP
@@ -168,10 +172,6 @@ PROGRAM Advection_p
    END IF
 
    ! Write out the final solution.
-   WRITE(*,200) 'Simulation step number: ', nadv, &
-                '; Simulation time: ', t, &
-                '; Max: ', MAXVAL(u0), &
-                '; Min: ', MINVAL(u0)
    CALL FileName('Solution', nadv, 'dat', fname)
    CALL WriteData(n, x, u0, fname)
 
