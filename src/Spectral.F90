@@ -2,11 +2,15 @@
 !> @author Matthew Clay
 !> @brief Module to compute the derivative of a signal using spectral methods.
 !!
-!! 1. We set the module up once for a code.
-!! 2. Purpose is to calculate derivative of a physical signal.
-!! 3. We assume the grid is 2*pi in length.
-!! 4. In-place DFTs.
-!! 5. Discuss inefficiencies due to array copying, but that we don't care.
+!! This module uses FFTW to compute the derivative of a signal. The module setup
+!! procedure runs through the process of setting up FFTW for the transforms. A
+!! couple of notes:
+!!
+!!    1. The grid is assumed to be 2*pi in length.
+!!    2. Since the incoming signal is real, we use in-place transforms in FFTW.
+!!    3. This module is not "efficient", as the incoming signal is copied to
+!!       the working arrays for FFTW. Since this is more for learning purposes,
+!!       we do not care about these inefficiencies.
 MODULE Spectral_m
 
    ! Required modules.
@@ -85,7 +89,18 @@ CONTAINS
 
    !> Differentiate a signal in physical space using spectral methods.
    !!
-   !! Add a discussion about this.
+   !! Differentiation in physical space corresponds to multiplication by i*k in
+   !! spectral space. This procedure can produce extremely accurate results for
+   !! smooth signals, achieving exponential rates of convergence as the grid is
+   !! refined. The steps in the subroutine are the following:
+   !!
+   !!    1. Fill in the FFTW working arrays with the incoming signal.
+   !!    2. Execute the forward (R to C) FFT using the R2C plan created during
+   !!       the module setup process (r2cPlan).
+   !!    3. Loop over all wavenumbers and perform differentiation.
+   !!    4. Execute the reverse (C to R) FFT using the C2R plan created during
+   !!       the module setup process (c2rPlan).
+   !!    5. Copy the FFTW output array to the dudx output array.
    !!
    !> @param[in] n Size of the array.
    !> @param[in] u Signal in physical space at the grid points.
@@ -147,6 +162,7 @@ CONTAINS
       ! Clean up the FFTW plans.
       CALL FFTW_DESTROY_PLAN(r2cPlan)
       CALL FFTW_DESTROY_PLAN(c2rPlan)
+      CALL FFTW_CLEANUP()
    END SUBROUTINE SpectralFinalize
 
 END MODULE Spectral_m

@@ -2,7 +2,11 @@
 !> @author Matthew Clay
 !> @brief Execution code for the scalar advection equation.
 !!
-!! Add more details here.
+!! In this code we solve the scalar advection equation using a spectral method.
+!! The variables are evolved in physical space, but differentiation is carried
+!! out in spectral space. In the spectral module, the FFT is performed using the
+!! FFTW library. Once differentiation is performed in spectral space, the
+!! inverse transform is used to get the derivative in physical space.
 PROGRAM Advection_p
 
    ! Required modules.
@@ -20,6 +24,8 @@ PROGRAM Advection_p
    INTEGER(KIND=IWP),PARAMETER :: EXPONENTIAL = 1_IWP
    !
    ! The different wave speeds that can be used.
+   !
+   ! NOTE: only constant wave speed is currently implemented.
    !
    !> Constant wavespeed of 2*PI.
    INTEGER(KIND=IWP),PARAMETER :: CONSTANT = 0_IWP
@@ -182,7 +188,9 @@ CONTAINS
 
    !> Subroutine to calculate the RHS of the ODE system.
    !!
-   !! ... to be added.
+   !! The RHS of the scalar advection equation is -c(x)*dudx, where c(x) is the
+   !! wave speed. We evaluate the derivative dudx using the spectral module, in
+   !! which the derivative is evaluated in spectral space.
    !!
    !> @param[in] n Number of grid points.
    !> @param[in] x Physical grid.
