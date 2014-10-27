@@ -17,9 +17,21 @@ SET(FFTW_USE_MPI FALSE)
 FIND_PACKAGE(FFTW REQUIRED)
 INCLUDE_DIRECTORIES(${FFTW_INCLUDES})
 
-# Build the main program.
-ADD_EXECUTABLE(advection ${ADVECTION_SOURCE_FILES} ${CORE_SOURCE_FILES})
+# The main program.
+OPTION(BUILD_ADVECTION "Build the scalar advection program." OFF)
+IF(BUILD_ADVECTION)
+   ADD_EXECUTABLE(advection
+                  ${ADVECTION_SOURCE_FILES}
+                  ${CORE_SOURCE_FILES})
+   TARGET_LINK_LIBRARIES(advection ${FFTW_LIBRARIES})
+ENDIF(BUILD_ADVECTION)
 
-# Link with FFTW.
-TARGET_LINK_LIBRARIES(advection ${FFTW_LIBRARIES})
+# The differentiation program.
+OPTION(BUILD_DIFFERENTIATE "Build the differentiation program." OFF)
+IF(BUILD_DIFFERENTIATE)
+   ADD_EXECUTABLE(differentiate
+                  ${DIFFERENTIATE_SOURCE_FILES}
+                  ${CORE_SOURCE_FILES})
+   TARGET_LINK_LIBRARIES(differentiate ${FFTW_LIBRARIES})
+ENDIF(BUILD_DIFFERENTIATE)
 

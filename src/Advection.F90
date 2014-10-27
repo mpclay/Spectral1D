@@ -9,5 +9,16 @@ PROGRAM Advection_p
 
    IMPLICIT NONE
 
+   ! User inputs for the simulation.
+   !
+   !> Number of grid points. Must be an even number.
+   INTEGER(KIND=IWP),PARAMETER :: n = 64_IWP
+
+   ! Initialize the spectral module.
+   CALL SpectralSetup(n)
+
+   ! Clean up the code.
+   CALL SpectralFinalize()
+
 END PROGRAM Advection_p
 
