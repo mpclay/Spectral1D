@@ -4,7 +4,7 @@ set output "ErrorAnalysis.tex"
 set log x
 set log y
 
-set title "Error Analysis for Spectral Differentiation"
+set title "Error Analysis for Spectral Differentiation of $\\exp(\\sin(x))$"
 set xlabel "$\\Delta x$"
 set ylabel "Error"
 

@@ -9,7 +9,7 @@ set parametric
 set trange [0.0:2.0*pi]
 set samples 1000
 
-set title "Spectral Differentiation of a Signal"
+set title "Spectral Differentiation of $\\exp(\\sin(x))$"
 set xlabel "$x$"
 set ylabel "Numerical and Exact Derivatives"
 
