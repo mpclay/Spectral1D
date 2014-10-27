@@ -37,7 +37,7 @@ PROGRAM Differentiate_p
 
    ! Extraneous variables.
    !
-   !> Difference betwee the exact and numerical derivatives.
+   !> Difference between the exact and numerical derivatives.
    REAL(KIND=RWP) :: diff
    !> Looping index.
    INTEGER(KIND=IWP) :: i
