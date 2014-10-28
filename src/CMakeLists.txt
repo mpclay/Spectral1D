@@ -15,3 +15,8 @@ SET(DIFFERENTIATE_SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Differentiate.F90
     CACHE INTERNAL "Differentiation source files.")
 
+# Program to tranform a signal to and from spectral space.
+SET(TRANSFORM_SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Transform.F90
+    CACHE INTERNAL "Transform a signal to/from spectral space.")
+

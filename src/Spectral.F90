@@ -1,10 +1,16 @@
 !> @file Spectral.F90
 !> @author Matthew Clay
-!> @brief Module to compute the derivative of a signal using spectral methods.
+!> @brief Module to perform actions on a signal in spectral space.
 !!
-!! This module uses FFTW to compute the derivative of a signal. The module setup
-!! procedure runs through the process of setting up FFTW for the transforms. A
-!! couple of notes:
+!! This module provides some routines to interact with a signal in spectral
+!! space. Specficially, the main routines can be used to:
+!!
+!!    1. Transform a signal to and from spectral space. This can be used to see
+!!       how a FFT affects a signal.
+!!    2. Differentiate a signal.
+!!
+!! The module setup procedure runs through the process of setting up FFTW for
+!! the transforms. A couple of notes:
 !!
 !!    1. The grid is assumed to be 2*pi in length.
 !!    2. Since the incoming signal is real, we use in-place transforms in FFTW.
@@ -51,7 +57,7 @@ MODULE Spectral_m
    COMPLEX(C_DOUBLE_COMPLEX),PARAMETER,PRIVATE :: i1 = (0.0_RWP, 1.0_RWP)
 
    ! Module procedures.
-   PUBLIC :: SpectralSetup, Differentiate, SpectralFinalize
+   PUBLIC :: SpectralSetup, Transform, Differentiate, SpectralFinalize
 
 CONTAINS
 
@@ -86,6 +92,48 @@ CONTAINS
       r2cPlan = FFTW_PLAN_DFT_R2C_1D(nFFTW, rData, cData, FFTW_ESTIMATE)
       c2rPlan = FFTW_PLAN_DFT_C2R_1D(nFFTW, cData, rData, FFTW_ESTIMATE)
    END SUBROUTINE SpectralSetup
+
+   !> Transform a signal to and from spectral space.
+   !!
+   !! In this routine, we simply perform a forward and backward FFT on an input
+   !! signal. This routine serves no utility other than checking how the FFT
+   !! affects a signal.
+   !!
+   !> @param[in] n Size of the array.
+   !> @param[in] u Incoming signal in physical space.
+   !> @param[in] out Outgoing signal in physical space.
+   SUBROUTINE Transform(n, u, out)
+      IMPLICIT NONE
+      ! Calling arguments.
+      INTEGER(KIND=IWP),INTENT(IN) :: n
+      REAL(KIND=RWP),DIMENSION(n),INTENT(IN) :: u
+      REAL(KIND=RWP),DIMENSION(n),INTENT(OUT) :: out
+      ! Local variables.
+      ! Looping index.
+      INTEGER(KIND=IWP) :: i
+
+      ! Zero out the FFT working arrays.
+      cData(:) = (0.0_RWP, 0.0_RWP)
+
+      ! Fill the forward FFT working array.
+      DO i = 1, n
+         rData(i) = u(i)
+      END DO
+
+      ! Perform the forward FFT.
+      CALL FFTW_EXECUTE_DFT_R2C(r2cPlan, rData, cData)
+      !
+      ! Normalize the DFT.
+      cData = cData/REAL(n, RWP)
+
+      ! Invert the signal back to physical space.
+      CALL FFTW_EXECUTE_DFT_C2R(c2rPlan, cData, rData)
+
+      ! Fill in the output array for the calling code.
+      DO i = 1, n
+         out(i) = rData(i)
+      END DO
+   END SUBROUTINE Transform
 
    !> Differentiate a signal in physical space using spectral methods.
    !!
