@@ -1,12 +1,29 @@
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 2 of the License, or
+! (at your option) any later version.
+!
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License along
+! with this program; if not, write to the Free Software Foundation, Inc.,
+! 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+!
+! Copyright (C) 2014 by Matthew Clay <mpclay@gmail.com>
+!
 !> @file Advection.F90
 !> @author Matthew Clay
 !> @brief Execution code for the scalar advection equation.
 !!
-!! In this code we solve the scalar advection equation using a spectral method.
-!! The variables are evolved in physical space, but differentiation is carried
-!! out in spectral space. In the spectral module, the FFT is performed using the
-!! FFTW library. Once differentiation is performed in spectral space, the
-!! inverse transform is used to get the derivative in physical space.
+!! In this code we solve the scalar advection equation using spectral method for
+!! spatial differentiation. The variables are evolved in physical space, but
+!! differentiation is carried out in spectral space. In the spectral module, the
+!! FFT is performed using the FFTW library. Once differentiation is performed in
+!! spectral space, the inverse transform is used to get the derivative in
+!! physical space.
 PROGRAM Advection_p
 
    ! Required modules.
@@ -154,6 +171,8 @@ PROGRAM Advection_p
       nadv = nadv + 1_IWP
       t = t + dt
    END DO tloop
+   !
+   ! Write out the final state to the user.
    WRITE(*,200) 'Simulation step number: ', nadv, &
                 '; Simulation time: ', t, &
                 '; Max: ', MAXVAL(u0), &
