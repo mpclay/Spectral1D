@@ -82,7 +82,7 @@ PROGRAM Transform_p
    ! Transform the signal to and from spectral space.
    CALL Transform(n, u, out)
 
-   ! Write out the differentiated signal to file.
+   ! Write out the transformed signal to file.
    CALL FileName('Output', 'dat', fname)
    CALL WriteData(n, x, out, fname)
 

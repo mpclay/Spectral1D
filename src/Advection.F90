@@ -58,7 +58,7 @@ PROGRAM Advection_p
    !> Number of steps to take.
    INTEGER(KIND=IWP),PARAMETER :: nEnd = 100000_IWP
    !> Type of initial conditions.
-   INTEGER(KIND=IWP),PARAMETER :: ics = EXPONENTIAL
+   INTEGER(KIND=IWP) :: ics = EXPONENTIAL
    !> Type of wavespeed for the system.
    INTEGER(KIND=IWP),PARAMETER :: aType = CONSTANT
    !> Number of steps to write a file.
@@ -118,6 +118,7 @@ PROGRAM Advection_p
       CASE DEFAULT
          WRITE(*,100) 'Invalid IC option. Defaulting to sinusoidal.'
          100 FORMAT (A)
+         ics = SINUSOIDAL
          u0(i) = SIN(2.0_RWP*PI*REAL(i, RWP)/REAL(n, RWP))
    END SELECT
    !
@@ -125,8 +126,24 @@ PROGRAM Advection_p
    ic(:) = u0(:)
 
    ! Print some information to the user.
-   !
-   ! ... to be added.
+   WRITE(*,100) '--------------------------------------------'
+   WRITE(*,100) 'Spectral1D: A 1D Code Using Spectral Methods'
+   WRITE(*,100) '--------------------------------------------'
+   WRITE(*,100) ''
+   WRITE(*,150) 'System:', 'scalar advection'
+   SELECT CASE (ics)
+      CASE (SINUSOIDAL)
+         WRITE(*,150) 'ICs:', 'sinusoidal'
+      CASE (EXPONENTIAL)
+         WRITE(*,150) 'ICs:', 'exp. with sinusoidal'
+   END SELECT
+   WRITE(*,200) 'Num. of points:', n
+   WRITE(*,250) 'Time step:', dt
+   WRITE(*,200) 'Num. of steps:', nEnd
+   WRITE(*,100) ''
+   150 FORMAT (A,T17,A)
+   200 FORMAT (A,T17,I8.8)
+   250 FORMAT (A,T16,ES15.8)
 
    ! Enter the main time loop, in which the TVD RK3 scheme of Shu is used.
    nadv = 0_IWP
@@ -140,11 +157,11 @@ PROGRAM Advection_p
 
       ! Check if we need to print information to the screen.
       IF (MOD(nadv, printPeriod) == 0_IWP) THEN
-         WRITE(*,200) 'Simulation step number: ', nadv, &
+         WRITE(*,300) 'Simulation step number: ', nadv, &
                       '; Simulation time: ', t, &
                       '; Max: ', MAXVAL(u0), &
                       '; Min: ', MINVAL(u0)
-         200 FORMAT (A,I10.10,A,ES15.8,A,ES15.8,A,ES15.8)
+         300 FORMAT (A,I10.10,A,ES15.8,A,ES15.8,A,ES15.8)
       END IF
 
       ! Calculate the RHS with the data at the start of the time step.
@@ -173,7 +190,7 @@ PROGRAM Advection_p
    END DO tloop
    !
    ! Write out the final state to the user.
-   WRITE(*,200) 'Simulation step number: ', nadv, &
+   WRITE(*,300) 'Simulation step number: ', nadv, &
                 '; Simulation time: ', t, &
                 '; Max: ', MAXVAL(u0), &
                 '; Min: ', MINVAL(u0)
