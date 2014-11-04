@@ -33,36 +33,17 @@ MODULE IO_m
       MODULE PROCEDURE FileNameWithNum
    END INTERFACE FileName
 
+   !> Interface for writing out the data.
+   INTERFACE WriteData
+      MODULE PROCEDURE WriteDataIntReal
+      MODULE PROCEDURE WriteDataRealReal
+   END INTERFACE WriteData
+
    ! Module procedures.
-   PUBLIC :: WriteData
    PRIVATE :: FileNameWithoutNum, FileNameWithNum
+   PRIVATE :: WriteDataIntReal, WriteDataRealReal
 
 CONTAINS
-
-   !> Routine to write the solution to file.
-   !!
-   !> @param[in] n Number of grid points in the domain.
-   !> @param[in] x Locations of grid points.
-   !> @param[in] u Solution to be written.
-   !> @param[in] fname Name of the data file to be written.
-   SUBROUTINE WriteData(n, x, u, fname)
-      IMPLICIT NONE
-      ! Calling arguments.
-      INTEGER(KIND=IWP),INTENT(IN) :: n
-      REAL(KIND=RWP),DIMENSION(1:n),INTENT(IN) :: x, u
-      CHARACTER(LEN=*),INTENT(IN) :: fname
-      ! Local variables.
-      ! Looping index.
-      INTEGER(KIND=IWP) :: i
-
-      ! Loop over the grid points and record the data to file.
-      OPEN(UNIT=100,FILE=fname,FORM="FORMATTED",ACTION="WRITE",STATUS="REPLACE")
-      DO i = 1, n
-         WRITE(100,20) x(i), u(i)
-         20 FORMAT (ES15.8,2X,ES15.8)
-      END DO
-      CLOSE(UNIT=100)
-   END SUBROUTINE WriteData
 
    !> Routine to form a file name with a root name and file suffix.
    !!
@@ -97,6 +78,57 @@ CONTAINS
       WRITE(fname,10) TRIM(root), '_', num, '.', TRIM(suffix)
       10 FORMAT (A,A,I8.8,A,A)
    END SUBROUTINE FileNameWithNum
+
+   !> Routine to write integer and real data arrays to file.
+   !!
+   !> @param[in] n Size of the arrays.
+   !> @param[in] i1 First array containing integer data.
+   !> @param[in] x1 Second array containing real data.
+   !> @param[in] fname Name of the data file to be written.
+   SUBROUTINE WriteDataIntReal(n, i1, x1, fname)
+      IMPLICIT NONE
+      ! Calling arguments.
+      INTEGER(KIND=IWP),INTENT(IN) :: n
+      INTEGER(KIND=IWP),DIMENSION(1:n),INTENT(IN) :: i1
+      REAL(KIND=RWP),DIMENSION(1:n),INTENT(IN) :: x1
+      CHARACTER(LEN=*),INTENT(IN) :: fname
+      ! Local variables.
+      ! Looping index.
+      INTEGER(KIND=IWP) :: i
+
+      ! Loop over the grid points and record the data to file.
+      OPEN(UNIT=100,FILE=fname,FORM="FORMATTED",ACTION="WRITE",STATUS="REPLACE")
+      DO i = 1, n
+         WRITE(100,20) i1(i), x1(i)
+         20 FORMAT (I10.10,2X,ES15.8)
+      END DO
+      CLOSE(UNIT=100)
+   END SUBROUTINE WriteDataIntReal
+
+   !> Routine to write two real arrays to file.
+   !!
+   !> @param[in] n Size of the arrays.
+   !> @param[in] x1 First array of real data.
+   !> @param[in] x2 Second array of real data.
+   !> @param[in] fname Name of the data file to be written.
+   SUBROUTINE WriteDataRealReal(n, x1, x2, fname)
+      IMPLICIT NONE
+      ! Calling arguments.
+      INTEGER(KIND=IWP),INTENT(IN) :: n
+      REAL(KIND=RWP),DIMENSION(1:n),INTENT(IN) :: x1, x2
+      CHARACTER(LEN=*),INTENT(IN) :: fname
+      ! Local variables.
+      ! Looping index.
+      INTEGER(KIND=IWP) :: i
+
+      ! Loop over the grid points and record the data to file.
+      OPEN(UNIT=100,FILE=fname,FORM="FORMATTED",ACTION="WRITE",STATUS="REPLACE")
+      DO i = 1, n
+         WRITE(100,20) x1(i), x2(i)
+         20 FORMAT (ES15.8,2X,ES15.8)
+      END DO
+      CLOSE(UNIT=100)
+   END SUBROUTINE WriteDataRealReal
 
 END MODULE IO_m
 

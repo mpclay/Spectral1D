@@ -14,22 +14,18 @@
 !
 ! Copyright (C) 2014 by Matthew Clay <mpclay@gmail.com>
 !
-!> @file Advection.F90
+!> @file AdvectionFD.F90
 !> @author Matthew Clay
 !> @brief Execution code for the scalar advection equation.
 !!
-!! In this code we solve the scalar advection equation using spectral method for
-!! spatial differentiation. The variables are evolved in physical space, but
-!! differentiation is carried out in spectral space. In the spectral module, the
-!! FFT is performed using the FFTW library. Once differentiation is performed in
-!! spectral space, the inverse transform is used to get the derivative in
-!! physical space.
-PROGRAM Advection_p
+!! This code is intended to compare the spectral scheme with a standard FD
+!! scheme. Here, we use a 2nd order central FD approximation for the derivative
+!! appearing in the linear advection equation.
+PROGRAM AdvectionFD_p
 
    ! Required modules.
    USE Parameters_m,ONLY: IWP, RWP, PI
    USE IO_m,ONLY: FILE_NAME_LENGTH, FileName, WriteData
-   USE Spectral_m,ONLY: SpectralSetup, SpectralFinalize
 
    IMPLICIT NONE
 
@@ -96,9 +92,6 @@ PROGRAM Advection_p
    !> Variables for the order of convergence checking.
    REAL(KIND=RWP) :: l2, lInf, diff
 
-   ! Initialize the spectral module.
-   CALL SpectralSetup(n)
-
    ! Fill in the computational grid.
    DO i = 1, n
       x(i) = REAL(i, RWP)*2.0_RWP*PI/REAL(n, RWP)
@@ -126,9 +119,9 @@ PROGRAM Advection_p
    ic(:) = u0(:)
 
    ! Print some information to the user.
-   WRITE(*,100) '--------------------------------------------'
-   WRITE(*,100) 'Spectral1D: A 1D Code Using Spectral Methods'
-   WRITE(*,100) '--------------------------------------------'
+   WRITE(*,100) '--------------------------------'
+   WRITE(*,100) 'FD1D: A 1D Code Using FD Methods'
+   WRITE(*,100) '--------------------------------'
    WRITE(*,100) ''
    WRITE(*,150) 'System:', 'scalar advection'
    SELECT CASE (ics)
@@ -165,19 +158,19 @@ PROGRAM Advection_p
       END IF
 
       ! Calculate the RHS with the data at the start of the time step.
-      CALL RHS(n, x, u0, aType, Lu)
+      CALL RHS(n, x, dx, u0, aType, Lu)
       !
       ! Determine the first intermediate stage in the RK scheme.
       ui(:) = u0(:) + dt*Lu(:)
 
       ! Calculate the RHS using the first intermediate stage.
-      CALL RHS(n, x, ui, aType, Lu)
+      CALL RHS(n, x, dx, ui, aType, Lu)
       !
       ! Determine the second intermediate stage in the RK scheme.
       ui(:) = 0.75_RWP*u0(:) + 0.25_RWP*ui(:) + dt*0.25_RWP*Lu(:)
 
       ! Calculate the RHS using the second intermediate stage.
-      CALL RHS(n, x, ui, aType, Lu)
+      CALL RHS(n, x, dx, ui, aType, Lu)
       !
       ! Determine u at the next time step.
       u0(:) = u0(:)/3.0_RWP + &
@@ -217,29 +210,26 @@ PROGRAM Advection_p
    CALL FileName('Solution', nadv, 'dat', fname)
    CALL WriteData(n, x, u0, fname)
 
-   ! Clean up the code.
-   CALL SpectralFinalize()
-
 CONTAINS
 
    !> Subroutine to calculate the RHS of the ODE system.
    !!
    !! The RHS of the scalar advection equation is -c(x)*dudx, where c(x) is the
-   !! wave speed. We evaluate the derivative dudx using the spectral module, in
-   !! which the derivative is evaluated in spectral space.
+   !! wave speed. We evaluate the derivative using the standard second order
+   !! finite difference operator.
    !!
    !> @param[in] n Number of grid points.
    !> @param[in] x Physical grid.
+   !> @param[in] dx Local grid spacing.
    !> @param[in] u Solution at the current RK stage.
    !> @param[in] aType The type of wave speed to use.
    !> @param[in] Lu The RHS of the ODE system.
-   SUBROUTINE RHS(n, x, u, aType, Lu)
-      ! Required modules.
-      USE Spectral_m,ONLY: Differentiate
+   SUBROUTINE RHS(n, x, dx, u, aType, Lu)
       IMPLICIT NONE
       ! Calling arguments.
       INTEGER(KIND=IWP),INTENT(IN) :: n, aType
       REAL(KIND=RWP),DIMENSION(n),INTENT(IN) :: x, u
+      REAL(KIND=RWP),INTENT(IN) :: dx
       REAL(KIND=RWP),DIMENSION(n),INTENT(OUT) :: Lu
       ! Local variables.
       ! Derivative of the incoming signal.
@@ -248,7 +238,11 @@ CONTAINS
       INTEGER(KIND=IWP) :: i
 
       ! Calculate the derivative of the incoming signal.
-      CALL Differentiate(n, u, dudx)
+      DO i = 2, n-1
+         dudx(i) = (u(i+1) - u(i-1))/(2.0_RWP*dx)
+      END DO
+      dudx(1) = (u(2) - u(n))/(2.0_RWP*dx)
+      dudx(n) = (u(1) - u(n-1))/(2.0_RWP*dx)
 
       ! Form the RHS of the ODE system.
       SELECT CASE (aType)
@@ -265,5 +259,5 @@ CONTAINS
       END SELECT
    END SUBROUTINE RHS
 
-END PROGRAM Advection_p
+END PROGRAM AdvectionFD_p
 

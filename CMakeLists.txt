@@ -40,7 +40,21 @@ IF(BUILD_ADVECTION)
                   ${ADVECTION_SOURCE_FILES}
                   ${CORE_SOURCE_FILES})
    TARGET_LINK_LIBRARIES(advection ${FFTW_LIBRARIES})
+   INSTALL(TARGETS advection DESTINATION ${CMAKE_INSTALL_PREFIX})
 ENDIF(BUILD_ADVECTION)
+
+# Build the FD advection program.
+OPTION(BUILD_ADVECTION_FD "Build the scalar advection FD program." OFF)
+IF(BUILD_ADVECTION_FD)
+   ADD_EXECUTABLE(advectionFD
+                  ${ADVECTION_FD_SOURCE_FILES}
+                  ${CORE_SOURCE_FILES})
+   # In theory this link isn't needed, as DFTs are not being performed. I don't,
+   # however, want to make another CORE_SOURCE_FILES with the spectral module
+   # stripped out just for this one executable.
+   TARGET_LINK_LIBRARIES(advectionFD ${FFTW_LIBRARIES})
+   INSTALL(TARGETS advectionFD DESTINATION ${CMAKE_INSTALL_PREFIX})
+ENDIF(BUILD_ADVECTION_FD)
 
 # The differentiation program.
 OPTION(BUILD_DIFFERENTIATE "Build the differentiation program." OFF)
@@ -49,6 +63,7 @@ IF(BUILD_DIFFERENTIATE)
                   ${DIFFERENTIATE_SOURCE_FILES}
                   ${CORE_SOURCE_FILES})
    TARGET_LINK_LIBRARIES(differentiate ${FFTW_LIBRARIES})
+   INSTALL(TARGETS differentiate DESTINATION ${CMAKE_INSTALL_PREFIX})
 ENDIF(BUILD_DIFFERENTIATE)
 
 # The tranform program.
@@ -58,5 +73,16 @@ IF(BUILD_TRANSFORM)
                   ${TRANSFORM_SOURCE_FILES}
                   ${CORE_SOURCE_FILES})
    TARGET_LINK_LIBRARIES(transform ${FFTW_LIBRARIES})
+   INSTALL(TARGETS transform DESTINATION ${CMAKE_INSTALL_PREFIX})
 ENDIF(BUILD_TRANSFORM)
+
+# The aliasing program.
+OPTION(BUILD_ALIASING "Build the aliasing program." OFF)
+IF(BUILD_ALIASING)
+   ADD_EXECUTABLE(aliasing
+                  ${ALIASING_SOURCE_FILES}
+                  ${CORE_SOURCE_FILES})
+   TARGET_LINK_LIBRARIES(aliasing ${FFTW_LIBRARIES})
+   INSTALL(TARGETS aliasing DESTINATION ${CMAKE_INSTALL_PREFIX})
+ENDIF(BUILD_ALIASING)
 

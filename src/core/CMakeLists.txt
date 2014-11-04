@@ -14,7 +14,10 @@
 #
 # Copyright (C) 2014 by Matthew Clay <mpclay@gmail.com>
 #
-# Add sub directories.
-ADD_SUBDIRECTORY(core)
-ADD_SUBDIRECTORY(executables)
+# Core source files that are program independent
+SET(CORE_SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Parameters.F90
+    ${CMAKE_CURRENT_SOURCE_DIR}/IO.F90
+    ${CMAKE_CURRENT_SOURCE_DIR}/Spectral.F90
+    CACHE INTERNAL "Core source files.")
 
