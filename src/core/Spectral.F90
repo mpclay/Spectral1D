@@ -23,7 +23,8 @@
 !!
 !!    1. Transform a signal to and from spectral space. This can be used to see
 !!       how a FFT affects a signal (shouldn't do anything).
-!!    2. Differentiate a signal.
+!!    2. Give the spectrum of a signal.
+!!    3. Differentiate a signal.
 !!
 !! The module setup procedure runs through the process of setting up FFTW for
 !! the transforms. A couple of notes:
@@ -114,7 +115,7 @@ CONTAINS
    !!
    !! In this routine, we simply perform a forward and backward FFT on an input
    !! signal. This routine serves no utility other than checking how the FFT
-   !! affects a signal.
+   !! affects a signal (which should do nothing).
    !!
    !> @param[in] n Size of the array.
    !> @param[in] u Incoming signal in physical space.
@@ -154,7 +155,7 @@ CONTAINS
 
    !> Subroutine to calculate the spectrum of a signal.
    !!
-   !! Here we are not calculating a power spectrum, or anything fancy--just
+   !! Here we are not calculating a power spectrum or anything fancy--just
    !! outputting the Fourier coefficient magnitude at a given wavenumber.
    !!
    !> @param[in] n Size of the grid.

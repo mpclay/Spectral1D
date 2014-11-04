@@ -21,13 +21,13 @@
 !! In this program we explore how nonlinear products lead to aliasing in
 !! spectral codes. The problem setup is as follows:
 !!
-!!    1. Establish a grid with 32 grid points, which can resolve sinusoids up
-!!       to the 16th wavenumber.
-!!    2. Multiply two signals, each with wavenumbers of 10, which yields a wave
-!!       with wavenumber 20. The resulting wave cannot be resolved on the grid,
-!!       and should be aliased back to the -12th wavenumber.
+!!    1. Establish a grid with 16 grid points, which can resolve sinusoids up
+!!       to the 8th wavenumber.
+!!    2. Multiply two signals, each with wavenumbers of 6, which yields a wave
+!!       with wavenumber 12. The resulting wave cannot be resolved on the grid,
+!!       and should be aliased back to the -4th wavenumber.
 !!    3. Calculate the spectrum for each of these signals. We expect that to see
-!!       spikes at 10 for the two initial waves, and spike at 12 for the aliased
+!!       spikes at 6 for the two initial waves, and spike at 4 for the aliased
 !!       wave.
 PROGRAM Aliasing_p
 
@@ -41,7 +41,11 @@ PROGRAM Aliasing_p
    ! User inputs for the simulation.
    !
    !> Number of grid points. Must be an even number.
-   INTEGER(KIND=IWP),PARAMETER :: n = 32_IWP
+   INTEGER(KIND=IWP),PARAMETER :: n = 16_IWP
+   !> Wavenumber for the first wave: sin(k1*x).
+   INTEGER(KIND=IWP),PARAMETER :: k1 = 6_IWP
+   !> Wavenumber for the second wave: cos(k2*x).
+   INTEGER(KIND=IWP),PARAMETER :: k2 = 6_IWP
 
    ! Variables to run the code.
    !
@@ -84,8 +88,8 @@ PROGRAM Aliasing_p
 
    ! Initialize the signals and write them to a file.
    DO i = 1, n
-      u1(i) = SIN(10.0_RWP*x(i))
-      u2(i) = COS(10.0_RWP*x(i))
+      u1(i) = SIN(REAL(k1, RWP)*x(i))
+      u2(i) = COS(REAL(k2, RWP)*x(i))
       v(i) = u1(i)*u2(i)
    END DO
    CALL FileName('u1', 'dat', fname)
