@@ -58,7 +58,7 @@ PROGRAM Advection_p
    !> Number of steps to take.
    INTEGER(KIND=IWP),PARAMETER :: nEnd = 100000_IWP
    !> Type of initial conditions.
-   INTEGER(KIND=IWP) :: ics = EXPONENTIAL
+   INTEGER(KIND=IWP) :: ics = SINUSOIDAL
    !> Type of wavespeed for the system.
    INTEGER(KIND=IWP),PARAMETER :: aType = CONSTANT
    !> Number of steps to write a file.
@@ -96,6 +96,33 @@ PROGRAM Advection_p
    !> Variables for the order of convergence checking.
    REAL(KIND=RWP) :: l2, lInf, diff
 
+   ! Print some information to the user.
+   WRITE(*,100) '--------------------------------------------'
+   WRITE(*,100) 'Spectral1D: A 1D Code Using Spectral Methods'
+   WRITE(*,100) '--------------------------------------------'
+   WRITE(*,100) ''
+   WRITE(*,100) 'The code solves the advection equation, and'
+   WRITE(*,100) 'outputs a time sequence of the wave moving'
+   WRITE(*,100) 'through the domain if the user desires.'
+   WRITE(*,100) ''
+   WRITE(*,100) 'Parameters'
+   WRITE(*,100) '----------'
+   WRITE(*,150) 'System:', 'scalar advection'
+   SELECT CASE (ics)
+      CASE (SINUSOIDAL)
+         WRITE(*,150) 'ICs:', 'sinusoidal'
+      CASE (EXPONENTIAL)
+         WRITE(*,150) 'ICs:', 'exp. with sinusoidal'
+   END SELECT
+   WRITE(*,200) 'Num. of points:', n
+   WRITE(*,250) 'Time step:', dt
+   WRITE(*,200) 'Num. of steps:', nEnd
+   WRITE(*,100) ''
+   100 FORMAT (A)
+   150 FORMAT (A,T17,A)
+   200 FORMAT (A,T17,I8.8)
+   250 FORMAT (A,T16,ES15.8)
+
    ! Initialize the spectral module.
    CALL SpectralSetup(n)
 
@@ -117,33 +144,12 @@ PROGRAM Advection_p
          END DO
       CASE DEFAULT
          WRITE(*,100) 'Invalid IC option. Defaulting to sinusoidal.'
-         100 FORMAT (A)
          ics = SINUSOIDAL
          u0(i) = SIN(2.0_RWP*PI*REAL(i, RWP)/REAL(n, RWP))
    END SELECT
    !
    ! Store the initial condition for error checking.
    ic(:) = u0(:)
-
-   ! Print some information to the user.
-   WRITE(*,100) '--------------------------------------------'
-   WRITE(*,100) 'Spectral1D: A 1D Code Using Spectral Methods'
-   WRITE(*,100) '--------------------------------------------'
-   WRITE(*,100) ''
-   WRITE(*,150) 'System:', 'scalar advection'
-   SELECT CASE (ics)
-      CASE (SINUSOIDAL)
-         WRITE(*,150) 'ICs:', 'sinusoidal'
-      CASE (EXPONENTIAL)
-         WRITE(*,150) 'ICs:', 'exp. with sinusoidal'
-   END SELECT
-   WRITE(*,200) 'Num. of points:', n
-   WRITE(*,250) 'Time step:', dt
-   WRITE(*,200) 'Num. of steps:', nEnd
-   WRITE(*,100) ''
-   150 FORMAT (A,T17,A)
-   200 FORMAT (A,T17,I8.8)
-   250 FORMAT (A,T16,ES15.8)
 
    ! Enter the main time loop, in which the TVD RK3 scheme of Shu is used.
    nadv = 0_IWP
@@ -208,6 +214,8 @@ PROGRAM Advection_p
       END DO
       l2 = SQRT(l2*dx)
       WRITE(*,100) ''
+      WRITE(*,100) 'Errors'
+      WRITE(*,100) '------'
       WRITE(*,110) 'L2 Error:', l2
       WRITE(*,110) 'LInf Error:', lInf
       110 FORMAT (A,T16,ES15.8)

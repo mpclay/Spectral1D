@@ -58,6 +58,23 @@ PROGRAM Transform_p
    !> Looping index.
    INTEGER(KIND=IWP) :: i
 
+   ! Print some information to the user.
+   WRITE(*,100) '----------------------------------------'
+   WRITE(*,100) 'Transform: A Code to Investigate the DFT'
+   WRITE(*,100) '----------------------------------------'
+   WRITE(*,100) ''
+   WRITE(*,100) 'This program just takes the forward and'
+   WRITE(*,100) 'inverse DFT of a signal. The result'
+   WRITE(*,100) 'should be within roundoff error of the'
+   WRITE(*,100) 'starting signal. Both the initial and'
+   WRITE(*,100) 'final signals are written to file.'
+   WRITE(*,100) ''
+   WRITE(*,100) 'Parameters'
+   WRITE(*,100) '----------'
+   WRITE(*,150) 'Num. of points:', n
+   100 FORMAT (A)
+   150 FORMAT (A,T17,I3.3)
+
    ! Variable initialization.
    x(:) = 0.0_RWP
    u(:) = 0.0_RWP
@@ -97,9 +114,12 @@ PROGRAM Transform_p
       END IF
    END DO
    l2 = SQRT(l2*dx)
-   WRITE(*,100) 'L2 Error:', l2
-   WRITE(*,100) 'LInf Error:', lInf
-   100 FORMAT (A,T16,ES15.8)
+   WRITE(*,100) ''
+   WRITE(*,100) 'Errors'
+   WRITE(*,100) '------'
+   WRITE(*,200) 'L2 Error:', l2
+   WRITE(*,200) 'LInf Error:', lInf
+   200 FORMAT (A,T16,ES15.8)
 
    ! Clean up the code.
    CALL SpectralFinalize()

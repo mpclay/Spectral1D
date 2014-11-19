@@ -73,6 +73,24 @@ PROGRAM Aliasing_p
    !> Looping index.
    INTEGER(KIND=IWP) :: i
 
+   ! Print some information to the user.
+   WRITE(*,100) '-------------------------------------------'
+   WRITE(*,100) 'Aliasing: A 1D Code to Investigate Aliasing'
+   WRITE(*,100) '-------------------------------------------'
+   WRITE(*,100) ''
+   WRITE(*,100) 'The program will output the two signals and'
+   WRITE(*,100) 'their product in physical space. The code'
+   WRITE(*,100) 'will also output the spectrum for each of'
+   WRITE(*,100) 'the respective signals.'
+   WRITE(*,100) ''
+   WRITE(*,100) 'Parameters'
+   WRITE(*,100) '----------'
+   WRITE(*,150) 'Num. of points:', n
+   WRITE(*,150) '1st wavenumber:', k1
+   WRITE(*,150) '2nd wavenumber:', k2
+   100 FORMAT (A)
+   150 FORMAT (A,T17,I3.3)
+
    ! Variable initialization.
    x(:) = 0.0_RWP
    u1(:) = 0.0_RWP

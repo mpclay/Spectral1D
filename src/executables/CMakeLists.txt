@@ -39,3 +39,8 @@ SET(ALIASING_SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Aliasing.F90
     CACHE INTERNAL "Study aliasing arising from nonlinear products.")
 
+# Program to test Parseval's identity.
+SET(PARSEVAL_SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Parseval.F90
+    CACHE INTERNAL "Check Parseval's identity.")
+

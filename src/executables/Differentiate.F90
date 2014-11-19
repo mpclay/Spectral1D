@@ -43,7 +43,7 @@ PROGRAM Differentiate_p
    ! User inputs for the simulation.
    !
    !> Which wave to differentiate.
-   INTEGER(KIND=IWP),PARAMETER :: wave = SQUARE_WAVE
+   INTEGER(KIND=IWP),PARAMETER :: wave = EXP_SIN_X
    !> Number of grid points. Must be an even number.
    INTEGER(KIND=IWP),PARAMETER :: n = 256_IWP
 
@@ -74,6 +74,28 @@ PROGRAM Differentiate_p
    REAL(KIND=RWP) :: diff
    !> Looping index.
    INTEGER(KIND=IWP) :: i
+
+   ! Print some information to the user.
+   WRITE(*,100) '---------------------------------------------------------'
+   WRITE(*,100) 'Differentiate: A 1D Code to Investigate Spectral Accuracy'
+   WRITE(*,100) '---------------------------------------------------------'
+   WRITE(*,100) ''
+   WRITE(*,100) 'The program differentiates a signal using spectral means,'
+   WRITE(*,100) 'and outputs the result for the user. If an analytical'
+   WRITE(*,100) 'result for the derivative is available, the error between'
+   WRITE(*,100) 'the numerical and exact derivative will be reported.'
+   WRITE(*,100) ''
+   WRITE(*,100) 'Parameters'
+   WRITE(*,100) '----------'
+   WRITE(*,150) 'Num. of points:', n
+   IF (wave == EXP_SIN_X) THEN
+      WRITE(*,200) 'Waveform:', 'EXP(SIN(X))'
+   ELSE IF (wave == SQUARE_WAVE) THEN
+      WRITE(*,200) 'Waveform:', 'square wave'
+   END IF
+   100 FORMAT (A)
+   150 FORMAT (A,T17,I3.3)
+   200 FORMAT (A,T17,A)
 
    ! Variable initialization.
    x(:) = 0.0_RWP
@@ -151,9 +173,12 @@ PROGRAM Differentiate_p
          END IF
       END DO
       l2 = SQRT(l2*dx)
-      WRITE(*,100) 'L2 Error:', l2
-      WRITE(*,100) 'LInf Error:', lInf
-      100 FORMAT (A,T16,ES15.8)
+      WRITE(*,100) ''
+      WRITE(*,100) 'Errors'
+      WRITE(*,100) '------'
+      WRITE(*,250) 'L2 Error:', l2
+      WRITE(*,250) 'LInf Error:', lInf
+      250 FORMAT (A,T16,ES15.8)
    END IF
 
    ! Clean up the code.
