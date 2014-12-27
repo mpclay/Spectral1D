@@ -155,8 +155,8 @@ CONTAINS
 
    !> Subroutine to calculate the spectrum of a signal.
    !!
-   !! Here we are not calculating a power spectrum or anything fancy--just
-   !! outputting the Fourier coefficient magnitude at a given wavenumber.
+   !! We output the magnitude of the Fourier coefficients, taking into account
+   !! Hermitian symmetry.
    !!
    !> @param[in] n Size of the grid.
    !> @param[in] u Incoming signal from physical space.
@@ -170,6 +170,8 @@ CONTAINS
       INTEGER(KIND=IWP),DIMENSION(n/2+1),INTENT(OUT) :: kOut
       REAL(KIND=RWP),DIMENSION(n/2+1),INTENT(OUT) :: sOut
       ! Local variables.
+      ! Magnitude of a Fourier coefficient.
+      REAL(KIND=RWP) :: mag
       ! Looping index.
       INTEGER(KIND=IWP) :: i
       ! Index for the complex array from FFTW.
@@ -197,7 +199,12 @@ CONTAINS
       ! Fill in the magnitude of the Fourier coefficient.
       DO i = 0, n/2
          ind = i + 1
-         sOut(ind) = REAL(cData(ind)*CONJG(cData(ind)), RWP)
+         mag = REAL(cData(ind)*CONJG(cData(ind)), RWP)
+         IF ((i == 0_IWP) .OR. (i == n/2_IWP)) THEN
+            sOut(ind) = mag
+         ELSE
+            sOut(ind) = 2.0_RWP*mag
+         END IF
       END DO
    END SUBROUTINE Spectrum
 
@@ -251,7 +258,7 @@ CONTAINS
          cData(kInd) = i1*REAL(k, RWP)*cData(kInd)
       END DO
       !
-      ! Avoid sawtooth errors by explicitly setting the N/2 mode to zero.
+      ! Correct issues with the N/2 mode by setting the coefficient to zero.
       cData(wavMax+1) = (0.0_RWP, 0.0_RWP)
 
       ! Now that differentiation has been performed in spectral space, inverse

@@ -106,11 +106,7 @@ PROGRAM Parseval_p
    ! Calculate the Fourier space square magnitude of the signal.
    specSum = 0.0_RWP
    DO i = 1, n/2+1
-      IF ((i == 1) .OR. (i == n/2+1)) THEN
-         specSum = specSum + sVec(i)
-      ELSE
-         specSum = specSum + 2.0_RWP*sVec(i)
-      END IF
+      specSum = specSum + sVec(i)
    END DO
 
    ! Write out the information to the user.
